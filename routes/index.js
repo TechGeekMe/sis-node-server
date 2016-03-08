@@ -16,20 +16,22 @@ module.exports = function(app)  {
             }
             if (exists) {
                 // Change it to one doc only
-                Student.find({usn: usn}, function(err, docs) {
-                    res.end(JSON.stringify(docs));
+                Student.findOne({usn: usn}, function(err, doc) {
+                    res.end(JSON.stringify(doc));
+                })
+            } else {
+                scrapeTool(usn, dob, function(error, student) {
+                    if (error) {
+                        res.end();
+                        console.log(error)
+                        return;
+                    }
+                    Student.updateStudent(student, function(err, numAffected) {
+                        console.log("Student inserted");
+                    });
+                    res.end(JSON.stringify(student));
                 })
             }
-        })
-        scrapeTool(usn, dob, function(error, student) {
-            if (error) {
-                console.log(error)
-                return;
-            }
-            Student.updateStudent(student, function(err, numAffected) {
-                console.log("Student inserted");
-            });
-            res.end(JSON.stringify(student));
         })
     })
 }
