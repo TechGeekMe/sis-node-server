@@ -5,19 +5,19 @@ var SisSchema = mongoose.Schema({
     usn: String,
     name: String,
     courses: [{
-        _id:false,
+        _id: false,
         code: String,
         name: String,
-        attendence: {
-            _id:false,
+        attendance: {
+            _id: false,
             percentage: Number,
             attended: Number,
             absent: Number,
             remaining: Number
         },
         cie: String,
-        test: [Number],
-        assignment: [Number]
+        tests: [Number],
+        assignments: [Number]
     }],
     updated: {type: Date, default: Date.now, trim: true}
 });
@@ -41,12 +41,13 @@ SisSchema.statics.exists = function(usn, callback) {
 SisSchema.statics.insertStudent = function(student, callback)  {
     //var student = mongoose.models('student', SisSchema);
     var student = new this(student);
-    student.save(function(err) {
+    student.save(function(err, doc) {
         if(err) {
             console.log("error inserting student");
-        }else{
+            callback(err, doc);
+        } else {
             console.log("New student inserted into DB");
-            callback();
+            callback(null, doc);
         }
     });
  }
