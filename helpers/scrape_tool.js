@@ -1,10 +1,11 @@
-var request = require("request").defaults({jar: true}),
+var request = require("request"),
     cheerio = require('cheerio'),
     promise = require('promise'),
     url = "http://parents.msrit.edu/index.php";
 
 module.exports = function(usn, dob, callback) {
-    request(url, function(error, response, body) {
+    var j = request.jar();
+    request({url: url, jar: j}, function(error, response, body) {
         if (error) {
             callback(error, null);
             return;
@@ -19,13 +20,14 @@ module.exports = function(usn, dob, callback) {
         var payload = {'username': usn, 'passwd': dobBase64, "option": "com_user", "task": "login"};
         payload[magicInput] = "1";
         var student = {};
-        request.post({url: url, form: payload, followAllRedirects: true}, function(error, response, body) {
+        request.post({url: url, jar: j, form: payload, followAllRedirects: true}, function(error, response, body) {
             if (error) {
                 callback(error);
                 return;
             }
             // console.log(body)
             var $ = cheerio.load(body);
+            // TODO: Check if name is null, return student not found
             student.name = $('.tname2').first().text().trim();
             student.usn = usn.toUpperCase();
             student.dob = dob;
@@ -33,13 +35,14 @@ module.exports = function(usn, dob, callback) {
             var courses = $('.dash_od_row, .dash_even_row').map(function(i, el) {
                 return $(el);
             }).get();
+            console.log(student);
             if (courses.length == 0) {
                 callback(new Error('Student not found'), null);
                 return;
             }
             var coursePromises = [];
             courses.forEach(function(course) {
-                coursePromises.push(fetchCourse(course));
+                coursePromises.push(fetchCourse(course, j));
             })
             Promise.all(coursePromises).then(function(values) {
                 values.forEach(function(course) {
@@ -58,7 +61,7 @@ function prependUrl(url) {
     return 'http://parents.msrit.edu/' + url;
 }
 
-function fetchCourse(elem) {
+function fetchCourse(elem, j) {
     var p = new Promise(function(resolve, reject) {
         var course = {};
         course.code = elem.find('.courseCode').text();
@@ -67,14 +70,14 @@ function fetchCourse(elem) {
         course.attendance = {}
         var percentage = attendance_element.text();
         percentage = percentage.substring(0, percentage.length-1)
-        course.attendance.percent = percentage;
+        course.attendance.percentage = percentage;
         var cie_element = elem.find('.cie').children().first();
         course.cie = cie_element.text();
         course.assignments = [];
         course.tests = [];
         var cie_link = prependUrl(cie_element.attr('href'));
         var cie_promise = new Promise(function(resolve, reject) {
-            request.post(cie_link, function(error, response, body) {
+            request.post({url: cie_link, jar: j}, function(error, response, body) {
                 function getTableCell(row, n) {
                     return row.children().get(n).children[0].data.trim();
                 }
@@ -98,7 +101,7 @@ function fetchCourse(elem) {
 
         var attendance_link = prependUrl(attendance_element.attr('href'));
         var attendance_promise = new Promise(function(resolve, reject) {
-            request.post(attendance_link, function(error, response, body) {
+            request.post({url: attendance_link, jar: j}, function(error, response, body) {
                 var $ = cheerio.load(body);
                 course.attendance.attended = $('.progress').children().get(0).children[0].data.trim();
                 course.attendance.absent = $('.progress').children().get(1).children[0].data.trim();
