@@ -1,6 +1,7 @@
 var scrapeTool = require('../helpers/scrape_tool.js');
 var mongoose = require('mongoose');
 var Student = mongoose.model('Student');
+var AuthError = require('../AuthError');
 module.exports = function(app)  {
     app.get('/', function(req, res, next) {
         res.end("SIS Proxy server")
@@ -21,8 +22,11 @@ module.exports = function(app)  {
             } else {
                 scrapeTool(usn, dob, function(error, student) {
                     if (error) {
-                        res.end();
                         console.log(error)
+                        if (error instanceof AuthError) {
+                            res.status(401);
+                        }
+                        res.end();
                         return;
                     }
                     Student.insertStudent(student, function(err, doc) {

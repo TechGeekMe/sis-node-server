@@ -1,7 +1,15 @@
-var request = require("request"),
+var request = require('request'),
     cheerio = require('cheerio'),
     promise = require('promise'),
     url = "http://parents.msrit.edu/index.php";
+    AuthError = require('../AuthError');
+
+function AuthError(message) {
+  this.name = 'AuthError';
+  this.message = message || 'SIS Server login authentication failed';
+  this.stack = (new Error()).stack;
+}
+
 
 module.exports = function(usn, dob, callback) {
     var j = request.jar();
@@ -37,7 +45,7 @@ module.exports = function(usn, dob, callback) {
             }).get();
             console.log(student);
             if (courses.length == 0) {
-                callback(new Error('Student not found'), null);
+                callback(new AuthError('Student not found'), null);
                 return;
             }
             var coursePromises = [];
