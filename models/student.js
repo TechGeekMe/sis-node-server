@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var SisSchema = mongoose.Schema({
     usn: String,
     name: String,
+    dob: String,
     courses: [{
         _id: false,
         code: String,
