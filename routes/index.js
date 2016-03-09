@@ -15,7 +15,6 @@ module.exports = function(app)  {
                 return;
             }
             if (exists) {
-                // Change it to one doc only
                 Student.findOne({usn: usn}, function(err, doc) {
                     res.end(JSON.stringify(doc));
                 })
@@ -26,10 +25,14 @@ module.exports = function(app)  {
                         console.log(error)
                         return;
                     }
-                    Student.updateStudent(student, function(err, numAffected) {
+                    Student.insertStudent(student, function(err, doc) {
+                        if (err) {
+                            console.log(err);
+                            return;
+                        }
                         console.log("Student inserted");
+                        res.end(JSON.stringify(doc));
                     });
-                    res.end(JSON.stringify(student));
                 })
             }
         })
