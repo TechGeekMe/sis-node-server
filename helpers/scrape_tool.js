@@ -4,14 +4,8 @@ var request = require('request'),
     url = "http://parents.msrit.edu/index.php";
     AuthError = require('../AuthError');
 
-function AuthError(message) {
-  this.name = 'AuthError';
-  this.message = message || 'SIS Server login authentication failed';
-  this.stack = (new Error()).stack;
-}
-
-
 module.exports = function(usn, dob, callback) {
+    updatingList.push(usn)
     var j = request.jar();
     request({url: url, jar: j}, function(error, response, body) {
         if (error) {
@@ -56,6 +50,7 @@ module.exports = function(usn, dob, callback) {
                 values.forEach(function(course) {
                     student.courses.push(course);
                 });
+                student.update = Date.now()
                 callback(null, student)
             })
             .catch(function(reason) {
@@ -94,12 +89,14 @@ function fetchCourse(elem, j) {
                  for (var i = 0; i <= 3; i++) {
                     var marks = getTableCell(row, i);
                     if (marks !== '-') {
-                        course.tests.push(marks);
+                        var marksVal = marks.split("/")[0]
+                        course.tests.push(marksVal);
                     }
                 }
                 for (var i = 4; i <= 6; i++) {
                     var marks = getTableCell(row, i);
                     if (marks !== '-') {
+                        var marksVal = marks.split("/")[0]
                         course.assignments.push(marks);
                     }
                 }
