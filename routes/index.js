@@ -50,6 +50,8 @@ module.exports = function(app)  {
                         console.log(error)
                         if (error instanceof AuthError) {
                             res.status(401);
+                        } else {
+                            res.status(504);
                         }
                         res.end();
                         return;
