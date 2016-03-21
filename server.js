@@ -4,7 +4,7 @@ require('express-mongoose');
 var models = require('./models/student.js')
 var routes = require('./routes');
 global.updatingList = new Array()
-mongoose.connect('mongodb://localhost/sis', function(err) {
+mongoose.connect('mongodb://sis:***REMOVED***@***REMOVED***', function(err) {
     if (err) throw err;
     console.log("Connected!")
 
