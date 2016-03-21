@@ -39,7 +39,7 @@ module.exports = function(app)  {
                             console.log("Already Updating: " + usn)
                         }
                     }else{
-                        res.statusCode = 400
+                        res.status(401);
                         res.end("Credential Mismatch")
                     }
                 })
