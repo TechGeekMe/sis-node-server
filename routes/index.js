@@ -48,10 +48,12 @@ module.exports = function(app)  {
                     updatingList.splice(updatingList.indexOf(usn),1)
                     if (error) {
                         console.log(error)
-                        if (error instanceof AuthError) {
-                            res.status(401);
-                        } else {
-                            res.status(504);
+                        if (error) {
+                            if (error instanceof AuthError) {
+                                res.status(401);
+                            } else {
+                                res.status(504);
+                            }
                         }
                         res.end();
                         return;
