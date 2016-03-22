@@ -17,8 +17,8 @@ var SisSchema = mongoose.Schema({
             remaining: Number
         },
         cie: String,
-        tests: [Number],
-        assignments: [Number]
+        tests: [String],
+        assignments: [String]
     }],
     updated: {type: Date, default: Date.now, trim: true}
 });
