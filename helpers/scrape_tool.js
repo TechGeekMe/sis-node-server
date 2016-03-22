@@ -89,6 +89,9 @@ function fetchCourse(elem, j) {
                  for (var i = 0; i <= 3; i++) {
                     var marks = getTableCell(row, i);
                     if (marks !== '-') {
+                        if (marks == 'Abscent') {
+                            marks = 'A';
+                        }
                         var marksVal = marks.split("/")[0]
                         course.tests.push(marksVal);
                     }
@@ -96,8 +99,11 @@ function fetchCourse(elem, j) {
                 for (var i = 4; i <= 6; i++) {
                     var marks = getTableCell(row, i);
                     if (marks !== '-') {
+                        if (marks == 'Abscent') {
+                            marks = 'A';
+                        }
                         var marksVal = marks.split("/")[0]
-                        course.assignments.push(marks);
+                        course.assignments.push(marksVal);
                     }
                 }
                 resolve('done');
