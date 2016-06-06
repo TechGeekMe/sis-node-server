@@ -119,7 +119,11 @@ function fetchCourse(elem, j) {
                 if (course.attendance.absent == '') {
                     course.attendance.absent = '0';
                 }
-                course.attendance.remaining = $('.progress').children().get(2).children[0].children[0].data.trim();
+                if ($('.progress').children().get(2)) {
+                    course.attendance.remaining = $('.progress').children().get(2).children[0].children[0].data.trim();
+                }  else {
+                    course.attendance.remaining = '0';
+                }
                 resolve('done');
             });
         });
