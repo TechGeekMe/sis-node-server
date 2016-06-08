@@ -12,6 +12,6 @@ mongoose.connect('mongodb://sis:***REMOVED***@***REMOVED***', function(err) {
     routes(app);
 
     app.listen(process.env.PORT || 8080, function() {
-        console.log("Listening on port 3000");
+        console.log("Listening on port 8080");
     });
 })
