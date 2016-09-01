@@ -115,6 +115,9 @@ function fetchCourse(elem, j) {
             request.post({url: attendance_link, jar: j}, function(error, response, body) {
                 var $ = cheerio.load(body);
                 course.attendance.attended = $('.progress').children().get(0).children[0].data.trim();
+                if (course.attendance.attended == '') {
+                    course.attendance.attended = '0';
+                }
                 course.attendance.absent = $('.progress').children().get(1).children[0].data.trim();
                 if (course.attendance.absent == '') {
                     course.attendance.absent = '0';
